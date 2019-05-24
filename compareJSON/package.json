@@ -1,0 +1,21 @@
+{
+  "name": "comparejson",
+  "version": "1.0.0",
+  "description": "new",
+  "main": "index.js",
+  "scripts": {
+    "test": "compareJSON.js",
+    "start": "node --max-old-space-size=2076 compareJSON.js"
+  },
+  "dependencies": {
+    "@gamestop/gs-cli-aws-auth": "^1.3.4",
+    "JSONStream": "^1.3.5",
+    "aws-sdk": "^2.455.0",
+    "event-stream": "^4.0.1",
+    "json-diff": "^0.5.4",
+    "n-readlines": "^1.0.0",
+    "stream-json": "^1.2.1"
+  },
+  "author": "",
+  "license": "ISC"
+}
