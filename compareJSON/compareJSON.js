@@ -16,6 +16,35 @@ const parser = new Parser();
 var fs = require('fs')
 
 
+var diff = require('deep-diff')
+
+
+var observableDiff = require('deep-diff').observableDiff;
+var applyChange = require('deep-diff').applyChange;
+
+
+ items = {};
+// C:/Users/v_dmanikon/Documents/json_Tests/copy_Uncompressed // C:/Users/v_dmanikon/Documents/json_Tests/un_compressed
+ 
+
+ items[0] = lhs;
+ items[1] = rhs;
+
+
+// Before pushing into it
+observableDiff(lhs , rhs , function (d) {
+  // Apply all changes except to the name property...
+ // console.log(d.path);
+  //  console.log(d.path[0]);
+  if(paths.includes(d.path[0])){
+ // console.log(d);
+ // console.log('---------------');
+}
+  else{
+   //  console.log(d.path.toString()); 
+    } 
+
+});
 
 function HashTable(obj)
 {
@@ -102,66 +131,105 @@ function HashTable(obj)
 
 
 var h = new HashTable();
-index = 0;
+count = 0;
 var JSONStream = require('JSONStream');
 var es = require('event-stream');
 var bool = false;
 
 
 
-
-var stream1 = fs.createReadStream('C:/Users/v_dmanikon/Documents/Product_chrismo/other/Product_20190522_120440799.Json', {encoding: 'utf8'}),
+// chrismo 
+var stream1 = fs.createReadStream('C:/Users/v_dmanikon/Documents/Product_chrismo/4.1.0/Product_20190528_144553856.Json', {encoding: 'utf8'}),
     parser1 = JSONStream.parse('skus.*');
 
    stream1.pipe(parser1);
 
 parser1.on('data', function (data) {
- // console.log('SKU number is :  '+data.sku);
-  //console.log('SKU number is :  '+data);
+  //  console.log('Printing first doc');
+  
+  if(data.sku=='136108'){
+   console.log('Sku 136108 found  ');
+   // console.log(data);
+   lhs=data;
+}   
+
   h.setItem(data.sku,data); // whatever you will do with each JSON object
+  count++;
 });
 parser1.on('end', function (data) {
 
-  console.log('----------------------------------------------Read all the objects onto Hash Map------------------------------------------------');
-  console.log('Memory used is ' +process.memoryUsage().rss);
-  check(); // whatever you will do with each JSON object
+ ///console.log('Memory used in the beggining  ' +process.memoryUsage().rss);
+ //console.log('Total Objects '+count);
+  check();
 });
 parser1.on('error', function (data) {
-console.log('Error while parsing the chrismo '+data);
- 
+console.log('Error while parsing the chrismo '+data.sku);
 });
 
-
+var count2=0;
+target =0 ;
 var check =  function () {
-
-  var stream1 = fs.createReadStream('C:/Users/v_dmanikon/Documents/Product_chrismo/Product_20190522_120440799.Json', {encoding: 'utf8'}),
+// gismo
+  var stream1 = fs.createReadStream('C:/Users/v_dmanikon/Documents/Product_gismo/product-full_20190524120444040.json', {encoding: 'utf8'}),
       parser1 = JSONStream.parse('skus.*');
   
     stream1.pipe(parser1);
   
   parser1.on('data', function (data) {
-   // console.log('SKU number is :  '+data.sku);
-    //console.log('SKU number is :  '+data);
-   
-    if( h.hasItem((data.sku)) == false){
-      console.log('The following item is not available in GISMO '+ data.sku);
-     // console.log('Memory usage in the  second '+process.memoryUsage().rss);
-    }
-    else if(jsonDiff.diff(data, h.getItem(data.sku))!=undefined){
-  
-      console.log(' Sku number  ' +data.sku+'  changes at   '+'   '+jsonDiff.diffString(data, h.getItem(data.sku)));
-      console.log('-----------------');
-      console.log('Memory usage in the  second '+process.memoryUsage().rss);
+      
+    if(target<2){
+        //console.log('Sku 971091');
+      //  console.log(data);
+    target++;
     }
     
-  });
-  parser1.on('end', function (data) {
-    console.log('----------------------------------------------Second parse ended ------------------------------------------------');
-   console.log('Memory used by the end ' +process.memoryUsage().rss); // whatever you will do with each JSON object
+
+
+
+    if( h.hasItem((data.sku)) == false){
+    // console.log('The following item is not available in GISMO '+ data.sku);
+     //console.log('Memory usage in the  second '+process.memoryUsage().rss);
+    }
+      
+     
+    else if(jsonDiff.diff(data, h.getItem(data.sku))!=undefined){
+        //    console.log('They dont match '+data.sku);
+     // console.log(' Sku number  ' +data.sku+'  changes at   '+'   '+jsonDiff.diffString(data, h.getItem(data.sku)));
+    //  console.log('-----------------');
+    //  console.log('Memory usage in the  second '+process.memoryUsage().rss);
+
+    observableDiff(lhs , rhs , function (d) {
+      // Apply all changes except to the name property...
+     // console.log(d.path);
+      //  console.log(d.path[0]);
+      if(paths.includes(d.path[0])){
+      console.log(d);
+     // console.log('---------------');
+    }
+      else{
+       //  console.log(d.path.toString()); 
+        } 
+    
+    });
+
+
+
+    count2++;
+    }
+    else if(jsonDiff.diff(data, h.getItem(data.sku))==undefined){
+          //  console.log('They  match     '+data.sku);
+    }
+    else{
+     //   console.log('in Else '+data.sku);
+    } 
   });
   parser1.on('error', function (data) {
-    console.log('Error while parsing the gismo '+data);
+  //  console.log('Error while parsing the gismo '+data);
      
     });
+    parser1.on('end', function (data) {
+
+ 
+     //   console.log('Memory used in the beggining  ' +process.memoryUsage().rss+'  Objects diff is '+count2);
+      });
   };
-  
